@@ -20,6 +20,7 @@ import Table from "../../components/ui/Table";
 import Loading from "../../components/ui/Loading";
 import { useMovies } from "../../hooks/useMovies";
 import { useCategories } from "../../hooks/useCategories";
+import { showToast, showAlert } from "../../utils/notifications";
 
 const AllMovies = () => {
   const { movies, loading, error, deleteMovie } = useMovies();
@@ -120,11 +121,19 @@ const AllMovies = () => {
   };
 
   const handleDeleteMovie = async (movieId) => {
-    if (window.confirm("Are you sure you want to delete this movie?")) {
+    const confirmed = await showAlert.confirm({
+      title: "Delete Movie",
+      text: "Are you sure you want to delete this movie? This action cannot be undone.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteMovie(movieId);
+        showToast.success("Movie deleted successfully");
       } catch (error) {
-        alert("Failed to delete movie: " + error.message);
+        showToast.error("Failed to delete movie: " + error.message);
       }
     }
   };
@@ -161,7 +170,9 @@ const AllMovies = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Movies</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            All Movies
+          </h1>
           <nav className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
             {breadcrumb.map((item, index) => (
               <span key={index} className="flex items-center">
@@ -361,7 +372,9 @@ const AllMovies = () => {
                       className="w-12 h-16 object-cover rounded"
                     />
                     <div>
-                      <p className="font-medium text-gray-900">{movie.title}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {movie.title}
+                      </p>
                       <p className="text-sm text-gray-500">
                         {movie.duration || "N/A"}
                       </p>

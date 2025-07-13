@@ -19,6 +19,7 @@ import Select from "../../components/ui/Select";
 import Table from "../../components/ui/Table";
 import Loading from "../../components/ui/Loading";
 import { useUsers } from "../../hooks/useUsers";
+import { showToast, showAlert } from "../../utils/notifications";
 
 const UserManagement = () => {
   const { users, loading, error, deleteUser } = useUsers();
@@ -31,29 +32,38 @@ const UserManagement = () => {
     let filtered = users;
 
     if (searchTerm) {
-      filtered = filtered.filter(user =>
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (user) =>
+          user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (roleFilter) {
-      filtered = filtered.filter(user => user.role === roleFilter);
+      filtered = filtered.filter((user) => user.role === roleFilter);
     }
 
     if (statusFilter) {
-      filtered = filtered.filter(user => user.status === statusFilter);
+      filtered = filtered.filter((user) => user.status === statusFilter);
     }
 
     setFilteredUsers(filtered);
   }, [users, searchTerm, roleFilter, statusFilter]);
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    const confirmed = await showAlert.confirm({
+      title: "Delete User",
+      text: "Are you sure you want to delete this user? This action cannot be undone.",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteUser(userId);
+        showToast.success("User deleted successfully");
       } catch (error) {
-        alert('Failed to delete user: ' + error.message);
+        showToast.error("Failed to delete user: " + error.message);
       }
     }
   };
@@ -90,7 +100,7 @@ const UserManagement = () => {
 
   const handleUserStatusChange = (userId, newStatus) => {
     // This would typically call an update service
-    console.log('Status change:', userId, newStatus);
+    console.log("Status change:", userId, newStatus);
   };
 
   const getStatusColor = (status) => {
@@ -151,7 +161,9 @@ const UserManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            User Management
+          </h1>
           <p className="text-gray-600 mt-1">
             Manage user accounts, roles, and permissions.
           </p>
@@ -172,7 +184,7 @@ const UserManagement = () => {
                   <p className="text-sm font-medium text-gray-600">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                     {stat.value}
                   </p>
                 </div>
@@ -261,12 +273,19 @@ const UserManagement = () => {
                 <Table.Cell>
                   <div className="flex items-center space-x-3">
                     <img
-                      src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=af3494&color=fff`}
+                      src={
+                        user.avatar ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          user.name || "User"
+                        )}&background=af3494&color=fff`
+                      }
                       alt={user.name}
                       className="w-10 h-10 rounded-full"
                     />
                     <div>
-                      <p className="font-medium text-gray-900">{user.name || 'Unknown User'}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {user.name || "Unknown User"}
+                      </p>
                       <p className="text-sm text-gray-500">ID: {user.id}</p>
                     </div>
                   </div>
@@ -276,13 +295,13 @@ const UserManagement = () => {
                     <div className="flex items-center space-x-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {user.email || 'No email'}
+                        {user.email || "No email"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {user.phone || 'No phone'}
+                        {user.phone || "No phone"}
                       </span>
                     </div>
                   </div>
@@ -290,57 +309,60 @@ const UserManagement = () => {
                 <Table.Cell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${getRoleColor(
-                      user.role || 'User'
+                      user.role || "User"
                     )}`}
                   >
-                    {user.role || 'User'}
+                    {user.role || "User"}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
-                      user.status || 'Active'
+                      user.status || "Active"
                     )}`}
                   >
-                    {user.status || 'Active'}
+                    {user.status || "Active"}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
-                      (user.subscription || 'Free') === "Premium"
+                      (user.subscription || "Free") === "Premium"
                         ? "bg-yellow-100 text-yellow-800"
-                        : (user.subscription || 'Free') === "Basic"
+                        : (user.subscription || "Free") === "Basic"
                         ? "bg-blue-100 text-blue-800"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >
-                    {user.subscription || 'Free'}
+                    {user.subscription || "Free"}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
                   <span className="text-sm text-gray-600">
-                    {user.joinDate || (user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A')}
+                    {user.joinDate ||
+                      (user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A")}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
                   <span className="text-sm text-gray-600">
-                    {user.lastLogin || 'Never'}
+                    {user.lastLogin || "Never"}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
                   <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="text-blue-600 hover:text-blue-800"
                       title="Edit User"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="p-1 text-red-600 hover:text-red-800"
                       onClick={() => handleDeleteUser(user.id)}
                       title="Delete User"
@@ -385,6 +407,5 @@ const UserManagement = () => {
     </div>
   );
 };
-
 
 export default UserManagement;

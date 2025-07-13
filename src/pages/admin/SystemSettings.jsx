@@ -13,6 +13,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
+import ChangePassword from "../../components/auth/ChangePassword";
 
 const SystemSettings = () => {
   const [settings, setSettings] = useState({
@@ -213,12 +214,12 @@ const SystemSettings = () => {
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div>
-            <h3 className="font-medium text-gray-900">
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">
               Two-Factor Authentication
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Require 2FA for all admin accounts
             </p>
           </div>
@@ -245,10 +246,14 @@ const SystemSettings = () => {
           </label>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div>
-            <h3 className="font-medium text-gray-900">Login Attempt Limits</h3>
-            <p className="text-sm text-gray-600">Limit failed login attempts</p>
+            <h3 className="font-medium text-gray-900 dark:text-gray-100">
+              Login Attempt Limits
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Limit failed login attempts
+            </p>
           </div>
           <label className="inline-flex items-center">
             <input
@@ -292,6 +297,11 @@ const SystemSettings = () => {
             />
           </div>
         )}
+      </div>
+
+      {/* Change Password Section */}
+      <div className="mt-8">
+        <ChangePassword />
       </div>
     </div>
   );

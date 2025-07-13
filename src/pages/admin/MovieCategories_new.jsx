@@ -7,6 +7,7 @@ import Table from "../../components/ui/Table";
 import Modal from "../../components/ui/Modal";
 import Loading from "../../components/ui/Loading";
 import { useCategories } from "../../hooks/useCategories";
+import { showToast, showAlert } from "../../utils/notifications";
 
 const MovieCategories = () => {
   const {
@@ -53,7 +54,7 @@ const MovieCategories = () => {
 
   const handleSaveCategory = async () => {
     if (!formData.name.trim()) {
-      alert("Category name is required");
+      showToast.error("Category name is required");
       return;
     }
 
@@ -69,18 +70,26 @@ const MovieCategories = () => {
       setFormData({ name: "", description: "", color: "#af3494" });
       setSelectedCategory(null);
     } catch (error) {
-      alert("Error saving category: " + error.message);
+      showToast.error("Error saving category: " + error.message);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
+    const confirmed = await showAlert.confirm({
+      title: "Delete Category",
+      text: "Are you sure you want to delete this category?",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteCategory(categoryId);
+        showToast.success("Category deleted successfully!");
       } catch (error) {
-        alert("Error deleting category: " + error.message);
+        showToast.error("Error deleting category: " + error.message);
       }
     }
   };

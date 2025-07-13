@@ -8,6 +8,7 @@ import Select from "../../components/ui/Select";
 import Loading from "../../components/ui/Loading";
 import { movieService, uploadService } from "../../services/firebaseServices";
 import { useCategories } from "../../hooks/useCategories";
+import { showToast } from "../../utils/notifications";
 
 const useTags = () => {
   const [tags, setTags] = useState([]);
@@ -94,12 +95,12 @@ const EditMovie = () => {
             tags: movie.tags || [],
           });
         } else {
-          alert("Movie not found");
+          showToast.error("Movie not found");
           navigate("/admin/movies");
         }
       } catch (error) {
         console.error("Error fetching movie:", error);
-        alert("Error loading movie: " + error.message);
+        showToast.error("Error loading movie: " + error.message);
         navigate("/admin/movies");
       } finally {
         setLoading(false);
@@ -150,10 +151,10 @@ const EditMovie = () => {
       );
 
       if (missingFields.length > 0) {
-        alert(
-          `Please fill in the following required fields:\n${missingFields
-            .map(([_, label]) => `- ${label}`)
-            .join("\n")}`
+        showToast.error(
+          `Please fill in the following required fields: ${missingFields
+            .map(([_, label]) => label)
+            .join(", ")}`
         );
         return;
       }
@@ -193,11 +194,11 @@ const EditMovie = () => {
       }
 
       await movieService.updateMovie(id, movieToSave);
-      alert("Movie updated successfully!");
+      showToast.success("Movie updated successfully!");
       navigate("/admin/movies");
     } catch (error) {
       console.error("Error updating movie:", error);
-      alert("Failed to update movie: " + error.message);
+      showToast.error("Failed to update movie: " + error.message);
     } finally {
       setSaving(false);
     }
@@ -428,10 +429,10 @@ const EditMovie = () => {
                       />
                       <label
                         htmlFor="poster-upload"
-                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
                       >
-                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">
+                        <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 mb-2" />
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           Click to upload poster image
                         </p>
                       </label>
@@ -478,10 +479,10 @@ const EditMovie = () => {
                       />
                       <label
                         htmlFor="thumbnail-upload"
-                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
                       >
-                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">
+                        <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 mb-2" />
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           Click to upload thumbnail image
                         </p>
                       </label>

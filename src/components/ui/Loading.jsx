@@ -10,9 +10,13 @@ const Loading = ({ size = "md", text = "Loading..." }) => {
   return (
     <div className="flex flex-col items-center justify-center py-8">
       <div
-        className={`animate-spin rounded-full border-4 border-purple-200 border-t-purple-600 ${sizeClasses[size]}`}
+        className={`animate-spin rounded-full border-4 border-purple-200 dark:border-purple-800 border-t-purple-600 dark:border-t-purple-400 ${sizeClasses[size]}`}
       ></div>
-      {text && <p className="mt-4 text-gray-600">{text}</p>}
+      {text && (
+        <p className="mt-4 text-gray-600 dark:text-gray-400 font-body">
+          {text}
+        </p>
+      )}
     </div>
   );
 };

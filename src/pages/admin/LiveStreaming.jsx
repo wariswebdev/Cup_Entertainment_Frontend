@@ -11,43 +11,21 @@ import {
 } from "lucide-react";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
+import Loading from "../../components/ui/Loading";
+import { useLiveStreaming } from "../../hooks/useLiveStreaming";
+import { showToast } from "../../utils/notifications";
 
 const LiveStreaming = () => {
-  const [streams, setStreams] = useState([
-    {
-      id: 1,
-      title: "Movie Premiere: The New Adventure",
-      status: "live",
-      viewers: 1234,
-      startTime: "2025-01-15T19:00:00",
-      thumbnail:
-        "https://via.placeholder.com/300x200/FF6B6B/FFFFFF?text=Live+Movie",
-      category: "Movie Premiere",
-      duration: "2h 45m",
-    },
-    {
-      id: 2,
-      title: "Behind the Scenes: Comedy Special",
-      status: "scheduled",
-      viewers: 0,
-      startTime: "2025-01-16T20:00:00",
-      thumbnail:
-        "https://via.placeholder.com/300x200/4ECDC4/FFFFFF?text=Comedy+BTS",
-      category: "Behind the Scenes",
-      duration: "1h 30m",
-    },
-    {
-      id: 3,
-      title: "Q&A with Director",
-      status: "ended",
-      viewers: 856,
-      startTime: "2025-01-14T18:00:00",
-      thumbnail:
-        "https://via.placeholder.com/300x200/45B7D1/FFFFFF?text=Director+QA",
-      category: "Interview",
-      duration: "1h 15m",
-    },
-  ]);
+  const {
+    streams,
+    loading,
+    error,
+    addStream,
+    updateStream,
+    deleteStream,
+    startStream,
+    stopStream,
+  } = useLiveStreaming();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newStream, setNewStream] = useState({
@@ -55,8 +33,50 @@ const LiveStreaming = () => {
     description: "",
     startTime: "",
     category: "",
+    duration: "",
     thumbnail: null,
   });
+
+  const handleCreateStream = async () => {
+    if (!newStream.title || !newStream.startTime) {
+      showToast.error("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      await addStream(newStream);
+      setNewStream({
+        title: "",
+        description: "",
+        startTime: "",
+        category: "",
+        duration: "",
+        thumbnail: null,
+      });
+      setShowCreateModal(false);
+      showToast.success("Stream created successfully!");
+    } catch (error) {
+      showToast.error("Error creating stream: " + error.message);
+    }
+  };
+
+  const handleStartStream = async (streamId) => {
+    try {
+      await startStream(streamId);
+      showToast.success("Stream started successfully!");
+    } catch (error) {
+      showToast.error("Error starting stream: " + error.message);
+    }
+  };
+
+  const handleStopStream = async (streamId) => {
+    try {
+      await stopStream(streamId);
+      showToast.success("Stream stopped successfully!");
+    } catch (error) {
+      showToast.error("Error stopping stream: " + error.message);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -114,6 +134,16 @@ const LiveStreaming = () => {
       color: "text-purple-600",
     },
   ];
+
+  if (loading) return <Loading />;
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error loading streams: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -211,8 +241,13 @@ const LiveStreaming = () => {
                           </span>
                         </div>
                       </div>
-                      <Button size="sm" className="bg-red-600 hover:bg-red-700">
-                        Manage
+                      <Button
+                        size="sm"
+                        className="bg-red-600 hover:bg-red-700"
+                        onClick={() => handleStopStream(stream.id)}
+                      >
+                        <Pause className="w-4 h-4 mr-1" />
+                        End Stream
                       </Button>
                     </div>
                   </div>
@@ -228,78 +263,103 @@ const LiveStreaming = () => {
           <Card.Title>All Streams</Card.Title>
         </Card.Header>
         <Card.Content>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {streams.map((stream) => (
-              <div
-                key={stream.id}
-                className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+          {streams.length === 0 ? (
+            <div className="text-center py-12">
+              <Radio className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No live streams yet
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Create your first live stream to get started with broadcasting.
+              </p>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-[#af3494] hover:bg-[#9c2d84]"
               >
-                <div className="relative">
-                  <img
-                    src={stream.thumbnail}
-                    alt={stream.title}
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span
-                      className={`flex items-center space-x-1 px-2 py-1 text-xs rounded-full ${getStatusColor(
-                        stream.status
-                      )}`}
-                    >
-                      {getStatusIcon(stream.status)}
-                      <span className="capitalize">{stream.status}</span>
-                    </span>
-                  </div>
-                  {stream.status === "live" && (
-                    <div className="absolute top-3 right-3 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                      {stream.viewers.toLocaleString()} viewers
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    {stream.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {stream.category}
-                  </p>
-
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span>
-                      {new Date(stream.startTime).toLocaleDateString()}
-                    </span>
-                    <span>{stream.duration}</span>
-                  </div>
-
-                  <div className="flex space-x-2">
-                    {stream.status === "live" ? (
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-red-600 hover:bg-red-700"
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First Stream
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {streams.map((stream) => (
+                <div
+                  key={stream.id}
+                  className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="relative">
+                    <img
+                      src={stream.thumbnail}
+                      alt={stream.title}
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <span
+                        className={`flex items-center space-x-1 px-2 py-1 text-xs rounded-full ${getStatusColor(
+                          stream.status
+                        )}`}
                       >
-                        <Play className="w-4 h-4 mr-1" />
-                        Watch Live
-                      </Button>
-                    ) : stream.status === "scheduled" ? (
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        Edit Schedule
-                      </Button>
-                    ) : (
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Eye className="w-4 h-4 mr-1" />
-                        View Details
-                      </Button>
+                        {getStatusIcon(stream.status)}
+                        <span className="capitalize">{stream.status}</span>
+                      </span>
+                    </div>
+                    {stream.status === "live" && (
+                      <div className="absolute top-3 right-3 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                        {stream.viewers.toLocaleString()} viewers
+                      </div>
                     )}
-                    <Button size="sm" variant="outline">
-                      <Settings className="w-4 h-4" />
-                    </Button>
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {stream.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {stream.category}
+                    </p>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span>
+                        {new Date(stream.startTime).toLocaleDateString()}
+                      </span>
+                      <span>{stream.duration}</span>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      {stream.status === "scheduled" ? (
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-red-600 hover:bg-red-700"
+                          onClick={() => handleStartStream(stream.id)}
+                        >
+                          <Play className="w-4 h-4 mr-1" />
+                          Go Live
+                        </Button>
+                      ) : stream.status === "live" ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                          onClick={() => handleStopStream(stream.id)}
+                        >
+                          <Pause className="w-4 h-4 mr-1" />
+                          End Stream
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" className="flex-1">
+                          <Eye className="w-4 h-4 mr-1" />
+                          View Details
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline">
+                        <Settings className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </Card.Content>
       </Card>
 
@@ -408,6 +468,39 @@ const LiveStreaming = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., 2h 30m"
+                    value={newStream.duration}
+                    onChange={(e) =>
+                      setNewStream({ ...newStream, duration: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Enter stream description"
+                    value={newStream.description}
+                    onChange={(e) =>
+                      setNewStream({
+                        ...newStream,
+                        description: e.target.value,
+                      })
+                    }
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end space-x-3 mt-6">
@@ -417,7 +510,7 @@ const LiveStreaming = () => {
                 >
                   Cancel
                 </Button>
-                <Button>Create Stream</Button>
+                <Button onClick={handleCreateStream}>Create Stream</Button>
               </div>
             </div>
           </div>

@@ -7,6 +7,7 @@ import Table from "../../components/ui/Table";
 import Modal from "../../components/ui/Modal";
 import Loading from "../../components/ui/Loading";
 import { tagService } from "../../services/firebaseServices";
+import { showToast, showAlert } from "../../utils/notifications";
 
 const useTags = () => {
   const [tags, setTags] = useState([]);
@@ -93,7 +94,7 @@ const Tags = () => {
     e.preventDefault();
 
     if (!tagForm.name.trim()) {
-      alert("Tag name is required");
+      showToast.error("Tag name is required");
       return;
     }
 
@@ -108,7 +109,9 @@ const Tags = () => {
       setEditingTag(null);
       setTagForm({ name: "", description: "", color: "#af3494" });
     } catch (error) {
-      alert(`Failed to ${editingTag ? "update" : "add"} tag: ${error.message}`);
+      showToast.error(
+        `Failed to ${editingTag ? "update" : "add"} tag: ${error.message}`
+      );
     }
   };
 
@@ -123,11 +126,19 @@ const Tags = () => {
   };
 
   const handleDelete = async (tagId) => {
-    if (window.confirm("Are you sure you want to delete this tag?")) {
+    const confirmed = await showAlert.confirm({
+      title: "Delete Tag",
+      text: "Are you sure you want to delete this tag?",
+      confirmText: "Yes, Delete",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         await deleteTag(tagId);
+        showToast.success("Tag deleted successfully!");
       } catch (error) {
-        alert("Failed to delete tag: " + error.message);
+        showToast.error("Failed to delete tag: " + error.message);
       }
     }
   };

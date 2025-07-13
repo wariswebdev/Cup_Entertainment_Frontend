@@ -119,8 +119,10 @@ const Analytics = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Analytics
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Track performance, audience insights, and revenue metrics.
           </p>
         </div>
@@ -144,10 +146,10 @@ const Analytics = () => {
             <Card.Content>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                     {stat.value}
                   </p>
                   <div className="flex items-center mt-1">
@@ -189,7 +191,7 @@ const Analytics = () => {
             </div>
           </Card.Header>
           <Card.Content>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-center">
                 <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-500">Interactive chart would go here</p>
@@ -222,10 +224,10 @@ const Analytics = () => {
               </div>
               <div className="pt-3 border-t border-gray-200">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
                     Total Revenue
                   </span>
-                  <span className="text-xl font-bold text-gray-900">
+                  <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                     $12.4K
                   </span>
                 </div>
@@ -266,10 +268,10 @@ const Analytics = () => {
                 {topContent.map((content, index) => (
                   <tr
                     key={index}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <td className="py-3 px-4">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">
                         {content.title}
                       </div>
                     </td>
@@ -322,7 +324,7 @@ const Analytics = () => {
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-6 bg-gray-200 rounded"></div>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
                       {country.country}
                     </span>
                   </div>
@@ -359,7 +361,7 @@ const Analytics = () => {
                       {device.device === "Tablet" && "📲"}
                       {device.device === "Smart TV" && "📺"}
                     </div>
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
                       {device.device}
                     </span>
                   </div>

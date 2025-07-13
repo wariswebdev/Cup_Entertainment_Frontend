@@ -9,6 +9,7 @@ import Loading from "../../components/ui/Loading";
 import { useMovies } from "../../hooks/useMovies";
 import { useCategories } from "../../hooks/useCategories";
 import { uploadService } from "../../services/firebaseServices";
+import { showToast } from "../../utils/notifications";
 
 const AddMovie = () => {
   const navigate = useNavigate();
@@ -115,17 +116,19 @@ const AddMovie = () => {
       );
 
       if (missingFields.length > 0) {
-        alert(
-          `Please fill in the following required fields:\n${missingFields
-            .map(([_, label]) => `- ${label}`)
-            .join("\n")}`
+        showToast.error(
+          `Please fill in the following required fields: ${missingFields
+            .map(([_, label]) => label)
+            .join(", ")}`
         );
         return;
       }
 
       // Validate images for published movies
       if (saveAsPublished && (!movieData.poster || !movieData.thumbnail)) {
-        alert("Poster and thumbnail images are required for published movies");
+        showToast.error(
+          "Poster and thumbnail images are required for published movies"
+        );
         return;
       }
 
@@ -172,11 +175,11 @@ const AddMovie = () => {
       delete movieToSave.videoFile;
 
       await addMovie(movieToSave);
-      alert("Movie saved successfully!");
+      showToast.success("Movie saved successfully!");
       navigate("/admin/movies");
     } catch (error) {
       console.error("Error saving movie:", error);
-      alert("Failed to save movie: " + error.message);
+      showToast.error("Failed to save movie: " + error.message);
     } finally {
       setLoading(false);
     }

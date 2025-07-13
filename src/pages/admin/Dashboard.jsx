@@ -5,6 +5,7 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 import { useMovies } from "../../hooks/useMovies";
 import Loading from "../../components/ui/Loading";
 import DatabaseSeeder from "../../components/admin/DatabaseSeeder";
+import AdminInitializer from "../../components/admin/AdminInitializer";
 
 const Dashboard = () => {
   const { stats, loading: analyticsLoading } = useAnalytics();
@@ -58,12 +59,20 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Development Seeder */}
-      <DatabaseSeeder />
+      {/* Development Tools */}
+      {process.env.NODE_ENV === "development" && (
+        <>
+          <AdminInitializer />
+          <DatabaseSeeder />
+        </>
+      )}
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Dashboard
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
           Welcome back! Here's what's happening with your entertainment
           platform.
         </p>
@@ -76,17 +85,19 @@ const Dashboard = () => {
             <Card.Content>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                     {stat.value}
                   </p>
-                  <p className="text-sm text-green-600 mt-1">
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-1">
                     {stat.change} from last month
                   </p>
                 </div>
-                <div className={`p-3 rounded-full bg-gray-100 ${stat.color}`}>
+                <div
+                  className={`p-3 rounded-full bg-gray-100 dark:bg-gray-700 ${stat.color}`}
+                >
                   <stat.icon className="w-6 h-6" />
                 </div>
               </div>
@@ -103,10 +114,10 @@ const Dashboard = () => {
             <Card.Title>Views Overview</Card.Title>
           </Card.Header>
           <Card.Content>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-center">
-                <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">
+                <TrendingUp className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                <p className="text-gray-500 dark:text-gray-400">
                   Chart visualization would go here
                 </p>
               </div>
@@ -124,20 +135,22 @@ const Dashboard = () => {
               {recentMovies.map((movie, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-[#af3494]/10 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#af3494]/10 dark:bg-[#af3494]/20 rounded-lg flex items-center justify-center">
                       <Film className="w-5 h-5 text-[#af3494]" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{movie.title}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
+                        {movie.title}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {movie.views} views
                       </p>
                     </div>
                   </div>
-                  <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                  <span className="px-2 py-1 text-xs bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 rounded-full">
                     {movie.status}
                   </span>
                 </div>
@@ -154,42 +167,48 @@ const Dashboard = () => {
         </Card.Header>
         <Card.Content>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Film className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
+                  <Film className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Add New Movie</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
+                    Add New Movie
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     Upload and manage movies
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Tv className="w-5 h-5 text-green-600" />
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-800/30 rounded-lg flex items-center justify-center">
+                  <Tv className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Add TV Show</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
+                    Add TV Show
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     Create new series content
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            <div className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-[#af3494]/10 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#af3494]/10 dark:bg-[#af3494]/20 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-[#af3494]" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Manage Users</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
+                    Manage Users
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     View and edit user accounts
                   </p>
                 </div>

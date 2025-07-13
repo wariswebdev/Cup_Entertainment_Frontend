@@ -28,6 +28,7 @@ const COLLECTIONS = {
   CATEGORIES: "categories",
   TAGS: "tags",
   ANALYTICS: "analytics",
+  LIVE_STREAMS: "liveStreams",
 };
 
 // Movies Services
@@ -154,6 +155,21 @@ export const tvShowService = {
       await deleteDoc(tvShowDoc);
     } catch (error) {
       console.error("Error deleting TV show:", error);
+      throw error;
+    }
+  },
+
+  // Get TV show by ID
+  async getTVShowById(tvShowId) {
+    try {
+      const tvShowDoc = doc(db, COLLECTIONS.TV_SHOWS, tvShowId);
+      const snapshot = await getDoc(tvShowDoc);
+      if (snapshot.exists()) {
+        return { id: snapshot.id, ...snapshot.data() };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching TV show:", error);
       throw error;
     }
   },
@@ -387,6 +403,133 @@ export const analyticsService = {
       };
     } catch (error) {
       console.error("Error fetching stats:", error);
+      throw error;
+    }
+  },
+};
+
+// Live Streaming Services
+export const liveStreamService = {
+  async getAllStreams() {
+    try {
+      const streamsCollection = collection(db, COLLECTIONS.LIVE_STREAMS);
+      const snapshot = await getDocs(streamsCollection);
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("Error fetching streams:", error);
+      throw error;
+    }
+  },
+
+  async addStream(streamData) {
+    try {
+      const streamsCollection = collection(db, COLLECTIONS.LIVE_STREAMS);
+      const docRef = await addDoc(streamsCollection, {
+        ...streamData,
+        status: "scheduled",
+        viewers: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      return docRef.id;
+    } catch (error) {
+      console.error("Error adding stream:", error);
+      throw error;
+    }
+  },
+
+  async updateStream(streamId, streamData) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      await updateDoc(streamDoc, {
+        ...streamData,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error updating stream:", error);
+      throw error;
+    }
+  },
+
+  async deleteStream(streamId) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      await deleteDoc(streamDoc);
+    } catch (error) {
+      console.error("Error deleting stream:", error);
+      throw error;
+    }
+  },
+
+  async startStream(streamId) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      await updateDoc(streamDoc, {
+        status: "live",
+        startedAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error starting stream:", error);
+      throw error;
+    }
+  },
+
+  async stopStream(streamId) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      await updateDoc(streamDoc, {
+        status: "ended",
+        endedAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error stopping stream:", error);
+      throw error;
+    }
+  },
+
+  async getStreamById(streamId) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      const snapshot = await getDoc(streamDoc);
+      if (snapshot.exists()) {
+        return { id: snapshot.id, ...snapshot.data() };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching stream:", error);
+      throw error;
+    }
+  },
+
+  async getStreamsByTVShow(tvShowId) {
+    try {
+      const streamsCollection = collection(db, COLLECTIONS.LIVE_STREAMS);
+      const q = query(streamsCollection, where("tvShowId", "==", tvShowId));
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("Error fetching streams by TV show:", error);
+      throw error;
+    }
+  },
+
+  async updateViewerCount(streamId, viewerCount) {
+    try {
+      const streamDoc = doc(db, COLLECTIONS.LIVE_STREAMS, streamId);
+      await updateDoc(streamDoc, {
+        viewers: viewerCount,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error updating viewer count:", error);
       throw error;
     }
   },
