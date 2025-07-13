@@ -120,6 +120,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           <img src={logoSM} alt="Cup Entertainment" className="h-12" />
         )}
       </div>
+      
 
       <SidebarButton onClick={() => setIsOpen(!isOpen)} isOpen={isOpen} />
 
