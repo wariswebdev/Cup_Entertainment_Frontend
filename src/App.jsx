@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import AdminLayout from "./components/layout/AdminLayout";
+import PublicLayout from "./components/layout/PublicLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -25,6 +26,9 @@ import "@fontsource/poppins/700.css";
 // Import auth pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminSetup from "./pages/admin/AdminSetup";
+
+// Import pages
+import Home from "./pages/Home";
 
 // Import all admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -49,11 +53,24 @@ const App = () => {
           <Router>
             <Routes>
               {/* Public Routes */}
+              <Route
+                path="/"
+                element={
+                  <PublicLayout>
+                    <Home />
+                  </PublicLayout>
+                }
+              />
+              <Route
+                path="/home"
+                element={
+                  <PublicLayout>
+                    <Home />
+                  </PublicLayout>
+                }
+              />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/setup" element={<AdminSetup />} />
-
-              {/* Redirect root to admin dashboard */}
-              <Route path="/" element={<Navigate to="/admin" replace />} />
 
               {/* Protected Admin Routes */}
               <Route
