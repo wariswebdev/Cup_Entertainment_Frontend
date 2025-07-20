@@ -29,6 +29,7 @@ import AdminSetup from "./pages/admin/AdminSetup";
 
 // Import pages
 import Home from "./pages/Home";
+import UserDashboard from "./pages/Dashboard";
 
 // Import all admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -71,6 +72,9 @@ const App = () => {
               />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/setup" element={<AdminSetup />} />
+
+              {/* User Dashboard Route */}
+              <Route path="/dashboard" element={<UserDashboard />} />
 
               {/* Protected Admin Routes */}
               <Route
