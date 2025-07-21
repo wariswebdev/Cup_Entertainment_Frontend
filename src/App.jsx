@@ -30,6 +30,7 @@ import AdminSetup from "./pages/admin/AdminSetup";
 // Import pages
 import Home from "./pages/Home";
 import UserDashboard from "./pages/Dashboard";
+import Watch from "./pages/Watch";
 
 // Import all admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -75,6 +76,9 @@ const App = () => {
 
               {/* User Dashboard Route */}
               <Route path="/dashboard" element={<UserDashboard />} />
+
+              {/* Watch Route */}
+              <Route path="/dashboard/watch" element={<Watch />} />
 
               {/* Protected Admin Routes */}
               <Route

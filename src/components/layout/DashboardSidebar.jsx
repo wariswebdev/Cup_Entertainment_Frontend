@@ -1,17 +1,19 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Home, 
-  Tv, 
-  Play, 
+import {
+  Home,
+  Tv,
+  Play,
   Heart,
   ChevronRight,
   Search,
   Settings,
-  User
+  User,
+  PlayCircle,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logoDarkSM from "../../assets/logo-dark-sm.png";
+import logoDark from "../../assets/logo-dark.png";
 
 const DashboardSidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
@@ -21,44 +23,44 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       name: "Home",
       icon: Home,
       path: "/dashboard",
-      active: location.pathname === "/dashboard"
+      active: location.pathname === "/dashboard",
     },
     {
       name: "TV Shows",
       icon: Tv,
       path: "/dashboard/tv-shows",
-      active: location.pathname.includes("/tv-shows")
+      active: location.pathname.includes("/tv-shows"),
     },
     {
       name: "Movies",
-      icon: Play,
+      icon: PlayCircle,
       path: "/dashboard/movies",
-      active: location.pathname.includes("/movies")
+      active: location.pathname.includes("/movies"),
     },
     {
       name: "Favorites",
       icon: Heart,
       path: "/dashboard/favorites",
-      active: location.pathname.includes("/favorites")
-    }
+      active: location.pathname.includes("/favorites"),
+    },
   ];
 
   const bottomItems = [
     {
       name: "Search",
       icon: Search,
-      path: "/dashboard/search"
+      path: "/dashboard/search",
     },
     {
       name: "Profile",
       icon: User,
-      path: "/dashboard/profile"
+      path: "/dashboard/profile",
     },
     {
       name: "Settings",
       icon: Settings,
-      path: "/dashboard/settings"
-    }
+      path: "/dashboard/settings",
+    },
   ];
 
   const sidebarVariants = {
@@ -66,27 +68,27 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       width: 256,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     closed: {
       width: 64,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
       transition: {
-        duration: 0.2
-      }
-    }
+        duration: 0.2,
+      },
+    },
   };
 
   return (
@@ -94,8 +96,8 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       {/* Mobile Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          <motion.div
+            className="fixed inset-0 bg-[#101010] z-40 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -105,38 +107,25 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.div 
-        className="fixed left-0 top-0 h-full z-50 bg-[#1a1a1a] border-r border-gray-800 shadow-lg"
+      <motion.div
+        className="fixed left-0 top-0 h-full z-50 bg-[#101010] shadow-lg"
         variants={sidebarVariants}
         animate={isOpen ? "open" : "closed"}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col align-center justify-between h-full">
           {/* Logo Section */}
-          <div className="p-3 border-b border-gray-800">
+          <div className="p-3">
             <div className="flex items-center justify-center">
-              <img 
-                src={logoDarkSM} 
-                alt="Cup Entertainment" 
-                className="h-8 w-auto"
+              <img
+                src={isOpen ? logoDark : logoDarkSM}
+                alt="Cup Entertainment"
+                className={`w-auto ${isOpen ? "h-19" : "h-10"}`}
               />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    className="ml-3 text-lg font-bold text-white"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2, delay: 0.1 }}
-                  >
-                    Cup Entertainment
-                  </motion.span>
-                )}
-              </AnimatePresence>
             </div>
           </div>
 
           {/* Main Menu Items */}
-          <div className="flex-1 py-4">
+          <div className="flex-1 py-4 mt-17">
             <nav className="space-y-1 px-2">
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
@@ -152,18 +141,23 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
                       to={item.path}
                       className={`
                         flex items-center px-3 py-2 rounded-lg transition-all duration-200
-                        ${item.active 
-                          ? 'bg-[#af3494] text-white' 
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                        ${
+                          item.active
+                            ? "bg-[#af3494] text-white"
+                            : "text-gray-300 hover:bg-gray-800 hover:text-white"
                         }
-                        ${!isOpen ? 'justify-center' : ''}
+                        ${!isOpen ? "justify-center" : ""}
                       `}
-                      title={!isOpen ? item.name : ''}
+                      title={!isOpen ? item.name : ""}
                     >
-                      <Icon className={`${isOpen ? 'w-5 h-5 mr-3' : 'w-5 h-5'} flex-shrink-0`} />
+                      <Icon
+                        className={`${
+                          isOpen ? "w-5 h-5 mr-3" : "w-5 h-5"
+                        } flex-shrink-0`}
+                      />
                       <AnimatePresence>
                         {isOpen && (
-                          <motion.span 
+                          <motion.span
                             className="font-medium text-sm"
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -182,42 +176,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
           </div>
 
           {/* Bottom Section */}
-          <div className="border-t border-gray-800 p-2">
-            {/* Sidebar Toggle Button */}
-            <div className="mb-2">
-              <motion.button
-                onClick={() => setIsOpen(!isOpen)}
-                className={`
-                  flex items-center justify-center w-full px-3 py-2 rounded-lg transition-all duration-200
-                  text-gray-300 hover:bg-gray-800 hover:text-white
-                  ${!isOpen ? 'justify-center' : ''}
-                `}
-                title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <motion.div
-                  animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </motion.div>
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.span 
-                      className="ml-3 font-medium text-sm"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      Collapse
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            </div>
-
+          <div className="p-2">
             {/* Bottom Menu Items */}
             <div className="space-y-1">
               {bottomItems.map((item) => {
@@ -229,14 +188,18 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
                     className={`
                       flex items-center px-3 py-2 rounded-lg transition-all duration-200
                       text-gray-300 hover:bg-gray-800 hover:text-white
-                      ${!isOpen ? 'justify-center' : ''}
+                      ${!isOpen ? "justify-center" : ""}
                     `}
-                    title={!isOpen ? item.name : ''}
+                    title={!isOpen ? item.name : ""}
                   >
-                    <Icon className={`${isOpen ? 'w-4 h-4 mr-3' : 'w-4 h-4'} flex-shrink-0`} />
+                    <Icon
+                      className={`${
+                        isOpen ? "w-4 h-4 mr-3" : "w-4 h-4"
+                      } flex-shrink-0`}
+                    />
                     <AnimatePresence>
                       {isOpen && (
-                        <motion.span 
+                        <motion.span
                           className="text-sm font-medium"
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -254,7 +217,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
 
             {/* User Profile Picture */}
             {!isOpen && (
-              <motion.div 
+              <motion.div
                 className="mt-3 flex justify-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -268,8 +231,8 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
 
             <AnimatePresence>
               {isOpen && (
-                <motion.div 
-                  className="mt-3 pt-3 border-t border-gray-800"
+                <motion.div
+                  className="mt-3 pt-3"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
@@ -292,6 +255,27 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
               )}
             </AnimatePresence>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Circular Collapse Button - positioned at the edge of sidebar */}
+      <motion.div
+        className={`fixed bottom-16 z-[9999] cursor-pointer transition-all duration-300 ${
+          isOpen ? "left-60" : "left-12"
+        }`}
+        onClick={() => setIsOpen(!isOpen)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#af3494] shadow-lg hover:bg-[#9c2d84] transition-colors">
+          <motion.div
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </motion.div>
         </div>
       </motion.div>
     </>
