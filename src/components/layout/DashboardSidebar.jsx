@@ -10,6 +10,7 @@ import {
   Settings,
   User,
   PlayCircle,
+  CreditCard,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import logoDarkSM from "../../assets/logo-dark-sm.png";
@@ -42,6 +43,12 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       icon: Heart,
       path: "/dashboard/favorites",
       active: location.pathname.includes("/favorites"),
+    },
+    {
+      name: "Subscriptions",
+      icon: CreditCard,
+      path: "/dashboard/subscriptions",
+      active: location.pathname.includes("/subscriptions"),
     },
   ];
 

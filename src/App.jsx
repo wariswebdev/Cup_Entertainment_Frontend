@@ -31,6 +31,7 @@ import AdminSetup from "./pages/admin/AdminSetup";
 import Home from "./pages/Home";
 import UserDashboard from "./pages/Dashboard";
 import Watch from "./pages/Watch";
+import Subscriptions from "./pages/Subscriptions";
 
 // Import all admin pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -76,6 +77,12 @@ const App = () => {
 
               {/* User Dashboard Route */}
               <Route path="/dashboard" element={<UserDashboard />} />
+
+              {/* Subscriptions Route */}
+              <Route
+                path="/dashboard/subscriptions"
+                element={<Subscriptions />}
+              />
 
               {/* Watch Route */}
               <Route path="/dashboard/watch" element={<Watch />} />
