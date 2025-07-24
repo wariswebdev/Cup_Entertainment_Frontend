@@ -5,16 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  updatePassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../config/firebase";
+import apiService from "../services/api";
 
 const AuthContext = createContext({});
 
@@ -41,9 +32,12 @@ export const AuthProvider = ({ children }) => {
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [showSessionWarning, setShowSessionWarning] = useState(false);
 
-  // Check if user is admin
+  // Check if user is authenticated
+  const isAuthenticated = !!user && !!localStorage.getItem("authToken");
+
+  // Check if user is admin (you can modify this logic based on your backend response)
   const isAdmin = () => {
-    return !!userProfile; // If user has a profile in admin collection, they are admin
+    return user?.role === "admin" || false;
   };
 
   // Update activity timestamp
@@ -118,67 +112,49 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       setLoading(true);
 
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+      const response = await apiService.login({ email, password });
 
-      // Fetch admin profile from Firestore
-      const adminDoc = await getDoc(doc(db, "admin", user.uid));
+      if (response.token && response.user) {
+        // Store the token in localStorage
+        localStorage.setItem("authToken", response.token);
 
-      if (adminDoc.exists()) {
-        const profile = adminDoc.data();
-
-        // Check if account is active
-        if (profile.status === "suspended" || profile.status === "inactive") {
-          await signOut(auth);
-          throw new Error("Account is suspended. Contact administrator.");
-        }
-
-        // Update login tracking
-        const loginData = {
-          lastLogin: new Date().toISOString(),
-          loginCount: (profile.loginCount || 0) + 1,
-          lastIP: "Unknown", // You can implement IP tracking if needed
-          rememberMe: rememberMe,
-        };
-
-        await updateDoc(doc(db, "admin", user.uid), loginData);
-
-        setUserProfile({ ...profile, ...loginData });
+        // Set user data
+        setUser(response.user);
+        setUserProfile(response.user);
         setLastActivity(Date.now());
 
-        return { user, profile: { ...profile, ...loginData } };
+        // Store user data in localStorage if rememberMe is checked
+        if (rememberMe) {
+          localStorage.setItem("userData", JSON.stringify(response.user));
+        }
+
+        return { user: response.user, profile: response.user };
       } else {
-        await signOut(auth);
-        throw new Error(
-          "Admin profile not found. Please contact administrator."
-        );
+        throw new Error("Invalid response from server");
       }
     } catch (error) {
       console.error("Sign in error:", error);
       let errorMessage = "Failed to sign in. Please try again.";
 
-      switch (error.code) {
-        case "auth/user-not-found":
-          errorMessage = "No account found with this email address.";
-          break;
-        case "auth/wrong-password":
-          errorMessage = "Incorrect password. Please try again.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email address format.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "This account has been disabled.";
-          break;
-        case "auth/too-many-requests":
-          errorMessage = "Too many failed attempts. Please try again later.";
-          break;
-        default:
-          errorMessage = error.message;
+      // Handle different error types
+      if (
+        error.message.includes("Invalid credentials") ||
+        error.message.includes("User not found") ||
+        error.message.includes("Incorrect password")
+      ) {
+        errorMessage = "Invalid email or password. Please try again.";
+      } else if (error.message.includes("Email not verified")) {
+        errorMessage = "Please verify your email address before signing in.";
+      } else if (
+        error.message.includes("Account suspended") ||
+        error.message.includes("Account disabled")
+      ) {
+        errorMessage =
+          "Your account has been suspended. Please contact support.";
+      } else if (error.message.includes("Too many requests")) {
+        errorMessage = "Too many login attempts. Please try again later.";
+      } else {
+        errorMessage = error.message || errorMessage;
       }
 
       setError(errorMessage);
@@ -191,14 +167,19 @@ export const AuthProvider = ({ children }) => {
   // Sign out
   const logout = async () => {
     try {
-      // Update logout time if user exists
-      if (user && userProfile) {
-        await updateDoc(doc(db, "admin", user.uid), {
-          lastLogout: new Date().toISOString(),
-        });
+      // Call backend logout endpoint (if available)
+      try {
+        await apiService.logout();
+      } catch (error) {
+        // Continue with local logout even if backend call fails
+        console.warn("Backend logout failed:", error);
       }
 
-      await signOut(auth);
+      // Clear local storage
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userData");
+
+      // Reset state
       setUser(null);
       setUserProfile(null);
       setLastActivity(Date.now());
@@ -214,21 +195,21 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (email) => {
     try {
       setError(null);
-      await sendPasswordResetEmail(auth, email);
+      await apiService.forgotPassword(email);
       return true;
     } catch (error) {
       console.error("Password reset error:", error);
       let errorMessage = "Failed to send password reset email.";
 
-      switch (error.code) {
-        case "auth/user-not-found":
-          errorMessage = "No account found with this email address.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email address format.";
-          break;
-        default:
-          errorMessage = error.message;
+      if (
+        error.message.includes("User not found") ||
+        error.message.includes("No account found")
+      ) {
+        errorMessage = "No account found with this email address.";
+      } else if (error.message.includes("Invalid email")) {
+        errorMessage = "Invalid email address format.";
+      } else {
+        errorMessage = error.message || errorMessage;
       }
 
       setError(errorMessage);
@@ -237,16 +218,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Change password
-  const changePassword = async (newPassword) => {
+  const changePassword = async (currentPassword, newPassword) => {
     try {
       setError(null);
       if (!user) throw new Error("No user signed in");
 
-      await updatePassword(user, newPassword);
-
-      // Update password change timestamp
-      await updateDoc(doc(db, "admin", user.uid), {
-        passwordChangedAt: new Date().toISOString(),
+      await apiService.changePassword({
+        currentPassword,
+        newPassword,
       });
 
       return true;
@@ -261,28 +240,22 @@ export const AuthProvider = ({ children }) => {
   const createAdminUser = async (email, password, userData) => {
     try {
       setError(null);
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+      const response = await apiService.signup({
+        fullName: userData.name || userData.fullName,
         email,
-        password
-      );
-      const user = userCredential.user;
-
-      // Create admin profile in Firestore
-      const adminProfile = {
-        uid: user.uid,
-        email: user.email,
-        name: userData.name || "Admin",
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        status: "active",
+        password,
+        role: "admin",
         ...userData,
-      };
+      });
 
-      await setDoc(doc(db, "admin", user.uid), adminProfile);
-      setUserProfile(adminProfile);
-
-      return { user, profile: adminProfile };
+      if (response.token && response.user) {
+        localStorage.setItem("authToken", response.token);
+        setUser(response.user);
+        setUserProfile(response.user);
+        return { user: response.user, profile: response.user };
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
       console.error("Create admin error:", error);
       setError(error.message);
@@ -290,76 +263,68 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Update last login
-  const updateLastLogin = async () => {
-    if (user && userProfile) {
-      try {
-        await setDoc(
-          doc(db, "admin", user.uid),
-          {
-            ...userProfile,
-            lastLogin: new Date().toISOString(),
-          },
-          { merge: true }
-        );
-      } catch (error) {
-        console.error("Update last login error:", error);
+  // Create regular user
+  const createUser = async (email, password, userData) => {
+    try {
+      setError(null);
+      const response = await apiService.signup({
+        fullName: userData.name || userData.fullName,
+        email,
+        password,
+        role: "user",
+        ...userData,
+      });
+
+      if (response.token && response.user) {
+        localStorage.setItem("authToken", response.token);
+        setUser(response.user);
+        setUserProfile(response.user);
+        return { user: response.user, profile: response.user };
+      } else {
+        throw new Error("Invalid response from server");
       }
+    } catch (error) {
+      console.error("Create user error:", error);
+      setError(error.message);
+      throw error;
     }
   };
 
-  // Listen to auth state changes
+  // Check for existing authentication on app load
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const checkExistingAuth = async () => {
       try {
-        if (firebaseUser) {
-          setUser(firebaseUser);
+        const token = localStorage.getItem("authToken");
+        const userData = localStorage.getItem("userData");
 
-          // Fetch admin profile
-          const adminDoc = await getDoc(doc(db, "admin", firebaseUser.uid));
-
-          if (adminDoc.exists()) {
-            const profile = adminDoc.data();
-
-            // Check if account is active
-            if (
-              profile.status !== "suspended" &&
-              profile.status !== "inactive"
-            ) {
-              setUserProfile(profile);
-              setLastActivity(Date.now());
-              updateLastLogin();
-            } else {
-              // Account suspended, sign out
-              await signOut(auth);
-              setUser(null);
-              setUserProfile(null);
-              setError("Account suspended. Contact administrator.");
-            }
-          } else {
-            // No admin profile found, sign out
-            await signOut(auth);
+        if (token && userData) {
+          // Verify token with backend
+          try {
+            const response = await apiService.getProfile();
+            setUser(response.user || JSON.parse(userData));
+            setUserProfile(response.user || JSON.parse(userData));
+            setLastActivity(Date.now());
+          } catch (error) {
+            // Token is invalid, clear it
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userData");
             setUser(null);
             setUserProfile(null);
-            setError("Admin profile not found.");
           }
         } else {
           setUser(null);
           setUserProfile(null);
-          setLastActivity(Date.now());
-          setShowSessionWarning(false);
         }
       } catch (error) {
-        console.error("Auth state change error:", error);
-        setError(error.message);
+        console.error("Auth check error:", error);
         setUser(null);
         setUserProfile(null);
       } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return unsubscribe;
+    checkExistingAuth();
   }, []);
 
   const value = {
@@ -372,8 +337,9 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     changePassword,
     createAdminUser,
+    createUser,
     isAdmin,
-    isAuthenticated: !!user && !!userProfile && isAdmin(),
+    isAuthenticated,
     lastActivity,
     showSessionWarning,
     extendSession,

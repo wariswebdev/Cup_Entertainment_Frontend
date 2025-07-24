@@ -31,6 +31,7 @@ const sampleMovies = [
     language: ["English"],
     trailer: "https://example.com/trailer1",
     status: "Active",
+    imdbRating: 8.2,
     poster:
       "https://via.placeholder.com/300x400/4F46E5/FFFFFF?text=Action+Hero",
   },
@@ -46,6 +47,7 @@ const sampleMovies = [
     language: ["English"],
     trailer: "https://example.com/trailer2",
     status: "Active",
+    imdbRating: 7.5,
     poster:
       "https://via.placeholder.com/300x400/F59E0B/FFFFFF?text=Comedy+Central",
   },
@@ -61,7 +63,40 @@ const sampleMovies = [
     language: ["English", "Spanish"],
     trailer: "https://example.com/trailer3",
     status: "Active",
+    imdbRating: 9.1,
     poster: "https://via.placeholder.com/300x400/EF4444/FFFFFF?text=Drama+Deep",
+  },
+  {
+    title: "Sci-Fi Adventure",
+    description: "An interstellar journey through space and time.",
+    duration: "155 min",
+    releaseDate: "2024-04-05",
+    director: "Space Director",
+    cast: ["Space Actor", "Alien Performer", "Robot Voice"],
+    category: "Sci-Fi",
+    quality: "4K",
+    language: ["English"],
+    trailer: "https://example.com/trailer4",
+    status: "Active",
+    imdbRating: 8.7,
+    poster:
+      "https://via.placeholder.com/300x400/10B981/FFFFFF?text=Sci-Fi+Adventure",
+  },
+  {
+    title: "Horror Night",
+    description: "A spine-chilling horror that will keep you awake.",
+    duration: "105 min",
+    releaseDate: "2024-05-12",
+    director: "Horror Master",
+    cast: ["Scream Actor", "Final Girl", "Monster Performer"],
+    category: "Horror",
+    quality: "HD",
+    language: ["English"],
+    trailer: "https://example.com/trailer5",
+    status: "Active",
+    imdbRating: 7.8,
+    poster:
+      "https://via.placeholder.com/300x400/DC2626/FFFFFF?text=Horror+Night",
   },
 ];
 

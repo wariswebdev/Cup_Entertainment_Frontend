@@ -16,10 +16,12 @@ import TestimonialsSection from "../components/home/TestimonialsSection";
 import FeaturesSection from "../components/home/FeaturesSection";
 import StartFreeTrial from "../components/home/StartFreeTrial";
 import Footer from "../components/home/Footer";
+import { useNavigate, Link } from "react-router-dom";
 
 const Home = () => {
   const scrollRef = useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -268,12 +270,20 @@ const Home = () => {
 
               {/* Additional Options */}
               <div className="border-t border-gray-700 p-6">
-                <button className="w-full bg-[#af3494] hover:bg-[#9c2d84] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                <Link
+                  to="/login"
+                  className="w-full bg-[#af3494] hover:bg-[#9c2d84] text-white font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
+                  onClick={closeMobileMenu}
+                >
                   Sign In
-                </button>
-                <button className="w-full mt-3 border border-gray-600 hover:border-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                </Link>
+                <Link
+                  to="/signup"
+                  className="w-full mt-3 border border-gray-600 hover:border-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors block text-center"
+                  onClick={closeMobileMenu}
+                >
                   Sign Up
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -330,7 +340,9 @@ const Home = () => {
               min-h-[44px] min-w-[120px]"
             >
               <Play className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-              <span>Start Watching Now</span>
+              <span onClick={() => navigate("/dashboard")}>
+                Start Watching Now
+              </span>
             </button>
           </div>
         </div>

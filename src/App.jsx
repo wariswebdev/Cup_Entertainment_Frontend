@@ -12,6 +12,7 @@ import AdminLayout from "./components/layout/AdminLayout";
 import PublicLayout from "./components/layout/PublicLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+import BackendTester from "./components/BackendTester";
 
 // Import fonts
 import "@fontsource/inter/400.css";
@@ -26,10 +27,16 @@ import "@fontsource/poppins/700.css";
 // Import auth pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminSetup from "./pages/admin/AdminSetup";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 // Import pages
 import Home from "./pages/Home";
 import UserDashboard from "./pages/Dashboard";
+import TVShows from "./pages/TVShows";
+import TVShowDetail from "./pages/TVShowDetail";
+import Movies from "./pages/Movies";
+import MovieDetail from "./pages/MovieDetail";
 import Watch from "./pages/Watch";
 import Subscriptions from "./pages/Subscriptions";
 
@@ -40,7 +47,7 @@ import AddMovie from "./pages/admin/AddMovie";
 import EditMovie from "./pages/admin/EditMovie";
 import MovieCategories from "./pages/admin/MovieCategories";
 import Tags from "./pages/admin/Tags";
-import TVShows from "./pages/admin/TVShows";
+import AdminTVShows from "./pages/admin/TVShows";
 import AddTVShow from "./pages/admin/AddTVShow";
 import EditTVShow from "./pages/admin/EditTVShow";
 import LiveStreaming from "./pages/admin/LiveStreaming";
@@ -74,9 +81,19 @@ const App = () => {
               />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/setup" element={<AdminSetup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
 
               {/* User Dashboard Route */}
               <Route path="/dashboard" element={<UserDashboard />} />
+
+              {/* TV Shows Routes */}
+              <Route path="/dashboard/tv-shows" element={<TVShows />} />
+              <Route path="/dashboard/tv-show/:id" element={<TVShowDetail />} />
+
+              {/* Movies Routes */}
+              <Route path="/dashboard/movies" element={<Movies />} />
+              <Route path="/dashboard/movie/:id" element={<MovieDetail />} />
 
               {/* Subscriptions Route */}
               <Route
@@ -161,7 +178,7 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <AdminLayout>
-                      <TVShows />
+                      <AdminTVShows />
                     </AdminLayout>
                   </ProtectedRoute>
                 }
@@ -374,6 +391,8 @@ const App = () => {
               />
             </Routes>
             <Toaster />
+            {/* Temporary Backend Tester Component */}
+            {process.env.NODE_ENV === 'development' && <BackendTester />}
           </Router>
         </AuthProvider>
       </ThemeProvider>

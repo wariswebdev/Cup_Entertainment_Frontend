@@ -1,56 +1,30 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth } from "../config/firebase";
+import apiService from "../services/api";
 
 export const initializeAdminUser = async () => {
   try {
-    // Check if any admin user exists
-    const adminCollection = collection(db, "admin");
-    const snapshot = await getDocs(adminCollection);
+    // Check if any admin user exists via backend
+    const response = await apiService.request("/admin/check-exists");
 
-    if (snapshot.empty) {
+    if (!response.exists) {
       console.log("No admin user found. Creating default admin...");
 
       // Default admin credentials
       const defaultAdmin = {
+        fullName: "Cup Entertainment Admin",
         email: "admin@cupentertainment.com",
         password: "Admin123!",
-        name: "Cup Entertainment Admin",
         role: "admin",
-        isAdmin: true,
       };
 
-      // Create admin user
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        defaultAdmin.email,
-        defaultAdmin.password
-      );
-
-      const user = userCredential.user;
-
-      // Create user profile in Firestore
-      const adminProfile = {
-        uid: user.uid,
-        email: user.email,
-        name: defaultAdmin.name,
-        role: "admin",
-        isAdmin: true,
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        status: "Active",
-      };
-
-      await setDoc(doc(db, "admin", user.uid), adminProfile);
+      // Create admin user via backend
+      const adminResponse = await apiService.signup(defaultAdmin);
 
       console.log("Default admin user created successfully!");
       console.log("Email:", defaultAdmin.email);
       console.log("Password:", defaultAdmin.password);
       console.log("Please change these credentials after first login.");
 
-      return adminProfile;
+      return adminResponse.user;
     } else {
       console.log("Admin user already exists.");
       return null;
@@ -63,9 +37,8 @@ export const initializeAdminUser = async () => {
 
 export const checkAdminExists = async () => {
   try {
-    const adminCollection = collection(db, "admin");
-    const snapshot = await getDocs(adminCollection);
-    return !snapshot.empty;
+    const response = await apiService.request("/admin/check-exists");
+    return response.exists;
   } catch (error) {
     console.error("Error checking admin existence:", error);
     return false;

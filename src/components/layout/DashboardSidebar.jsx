@@ -30,13 +30,13 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       name: "TV Shows",
       icon: Tv,
       path: "/dashboard/tv-shows",
-      active: location.pathname.includes("/tv-shows"),
+      active: location.pathname.includes("/tv-show"),
     },
     {
       name: "Movies",
       icon: PlayCircle,
       path: "/dashboard/movies",
-      active: location.pathname.includes("/movies"),
+      active: location.pathname.includes("/movie"),
     },
     {
       name: "Favorites",
