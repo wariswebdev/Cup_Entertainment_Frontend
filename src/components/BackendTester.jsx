@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { runAuthTests, testBackendConnection } from '../utils/testAuth';
-import Button from './ui/Button';
+import React, { useState } from "react";
+import { runAuthTests, testBackendConnection } from "../utils/testAuth";
+import Button from "./ui/Button";
 
 const BackendTester = () => {
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -23,7 +23,7 @@ const BackendTester = () => {
   return (
     <div className="fixed top-4 right-4 z-50 bg-white border border-gray-300 rounded-lg p-4 shadow-lg">
       <h3 className="text-lg font-semibold mb-4">Backend Integration Tests</h3>
-      
+
       <div className="space-y-3">
         {/* Connection Test */}
         <div>
@@ -34,11 +34,17 @@ const BackendTester = () => {
             size="sm"
             className="w-full"
           >
-            {isTestingConnection ? 'Testing...' : 'Test Backend Connection'}
+            {isTestingConnection ? "Testing..." : "Test Backend Connection"}
           </Button>
           {connectionStatus !== null && (
-            <div className={`text-sm mt-1 ${connectionStatus ? 'text-green-600' : 'text-red-600'}`}>
-              {connectionStatus ? '✅ Backend Connected' : '❌ Backend Not Reachable'}
+            <div
+              className={`text-sm mt-1 ${
+                connectionStatus ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {connectionStatus
+                ? "✅ Backend Connected"
+                : "❌ Backend Not Reachable"}
             </div>
           )}
         </div>
@@ -51,7 +57,7 @@ const BackendTester = () => {
             size="sm"
             className="w-full"
           >
-            {isTestingAuth ? 'Testing...' : 'Test Auth Endpoints'}
+            {isTestingAuth ? "Testing..." : "Test Auth Endpoints"}
           </Button>
         </div>
 

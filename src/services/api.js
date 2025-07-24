@@ -98,6 +98,89 @@ class ApiService {
       body: JSON.stringify({ token, newPassword }),
     });
   }
+
+  // Movies endpoints
+  async getAllMovies() {
+    return this.request("/movies");
+  }
+
+  async getMovieById(movieId) {
+    return this.request(`/movies/${movieId}`);
+  }
+
+  async addMovie(movieData) {
+    return this.request("/movies", {
+      method: "POST",
+      body: JSON.stringify(movieData),
+    });
+  }
+
+  async updateMovie(movieId, movieData) {
+    return this.request(`/movies/${movieId}`, {
+      method: "PUT",
+      body: JSON.stringify(movieData),
+    });
+  }
+
+  async deleteMovie(movieId) {
+    return this.request(`/movies/${movieId}`, {
+      method: "DELETE",
+    });
+  }
+
+  // TV Shows endpoints
+  async getAllTVShows() {
+    return this.request("/tv-shows");
+  }
+
+  async getTVShowById(tvShowId) {
+    return this.request(`/tv-shows/${tvShowId}`);
+  }
+
+  async addTVShow(tvShowData) {
+    return this.request("/tv-shows", {
+      method: "POST",
+      body: JSON.stringify(tvShowData),
+    });
+  }
+
+  async updateTVShow(tvShowId, tvShowData) {
+    return this.request(`/tv-shows/${tvShowId}`, {
+      method: "PUT",
+      body: JSON.stringify(tvShowData),
+    });
+  }
+
+  async deleteTVShow(tvShowId) {
+    return this.request(`/tv-shows/${tvShowId}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Categories endpoints
+  async getAllCategories() {
+    return this.request("/categories");
+  }
+
+  async addCategory(categoryData) {
+    return this.request("/categories", {
+      method: "POST",
+      body: JSON.stringify(categoryData),
+    });
+  }
+
+  async updateCategory(categoryId, categoryData) {
+    return this.request(`/categories/${categoryId}`, {
+      method: "PUT",
+      body: JSON.stringify(categoryData),
+    });
+  }
+
+  async deleteCategory(categoryId) {
+    return this.request(`/categories/${categoryId}`, {
+      method: "DELETE",
+    });
+  }
 }
 
 export default new ApiService();

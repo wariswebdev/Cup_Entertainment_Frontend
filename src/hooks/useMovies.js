@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { movieService } from "../services/firebaseServices";
+import apiService from "../services/api";
 
 export const useMovies = () => {
   const [movies, setMovies] = useState([]);
@@ -9,7 +9,7 @@ export const useMovies = () => {
   const fetchMovies = async () => {
     try {
       setLoading(true);
-      const moviesData = await movieService.getAllMovies();
+      const moviesData = await apiService.getAllMovies();
       setMovies(moviesData);
       setError(null);
     } catch (err) {
@@ -21,9 +21,9 @@ export const useMovies = () => {
 
   const addMovie = async (movieData) => {
     try {
-      const movieId = await movieService.addMovie(movieData);
+      const movie = await apiService.addMovie(movieData);
       await fetchMovies(); // Refresh the list
-      return movieId;
+      return movie;
     } catch (err) {
       setError(err.message);
       throw err;
@@ -32,7 +32,7 @@ export const useMovies = () => {
 
   const updateMovie = async (movieId, movieData) => {
     try {
-      await movieService.updateMovie(movieId, movieData);
+      await apiService.updateMovie(movieId, movieData);
       await fetchMovies(); // Refresh the list
     } catch (err) {
       setError(err.message);
@@ -42,8 +42,17 @@ export const useMovies = () => {
 
   const deleteMovie = async (movieId) => {
     try {
-      await movieService.deleteMovie(movieId);
+      await apiService.deleteMovie(movieId);
       await fetchMovies(); // Refresh the list
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const getMovieById = async (movieId) => {
+    try {
+      return await apiService.getMovieById(movieId);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -61,6 +70,7 @@ export const useMovies = () => {
     addMovie,
     updateMovie,
     deleteMovie,
+    getMovieById,
     refreshMovies: fetchMovies,
   };
 };

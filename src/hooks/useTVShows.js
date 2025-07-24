@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { tvShowService } from "../services/firebaseServices";
+import apiService from "../services/api";
 
 export const useTVShows = () => {
   const [tvShows, setTVShows] = useState([]);
@@ -9,7 +9,7 @@ export const useTVShows = () => {
   const fetchTVShows = async () => {
     try {
       setLoading(true);
-      const tvShowsData = await tvShowService.getAllTVShows();
+      const tvShowsData = await apiService.getAllTVShows();
       setTVShows(tvShowsData);
       setError(null);
     } catch (err) {
@@ -21,9 +21,9 @@ export const useTVShows = () => {
 
   const addTVShow = async (tvShowData) => {
     try {
-      const tvShowId = await tvShowService.addTVShow(tvShowData);
+      const tvShow = await apiService.addTVShow(tvShowData);
       await fetchTVShows(); // Refresh the list
-      return tvShowId;
+      return tvShow;
     } catch (err) {
       setError(err.message);
       throw err;
@@ -32,7 +32,7 @@ export const useTVShows = () => {
 
   const updateTVShow = async (tvShowId, tvShowData) => {
     try {
-      await tvShowService.updateTVShow(tvShowId, tvShowData);
+      await apiService.updateTVShow(tvShowId, tvShowData);
       await fetchTVShows(); // Refresh the list
     } catch (err) {
       setError(err.message);
@@ -42,8 +42,17 @@ export const useTVShows = () => {
 
   const deleteTVShow = async (tvShowId) => {
     try {
-      await tvShowService.deleteTVShow(tvShowId);
+      await apiService.deleteTVShow(tvShowId);
       await fetchTVShows(); // Refresh the list
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const getTVShowById = async (tvShowId) => {
+    try {
+      return await apiService.getTVShowById(tvShowId);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -61,6 +70,7 @@ export const useTVShows = () => {
     addTVShow,
     updateTVShow,
     deleteTVShow,
+    getTVShowById,
     refreshTVShows: fetchTVShows,
   };
 };

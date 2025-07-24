@@ -11,8 +11,9 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import AdminLayout from "./components/layout/AdminLayout";
 import PublicLayout from "./components/layout/PublicLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import UserProtectedRoute from "./components/auth/UserProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
-import BackendTester from "./components/BackendTester";
+// import BackendTester from "./components/BackendTester";
 
 // Import fonts
 import "@fontsource/inter/400.css";
@@ -84,25 +85,71 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
 
+              {/* Public Subscriptions Route */}
+              <Route
+                path="/subscriptions"
+                element={
+                  <PublicLayout>
+                    <Subscriptions />
+                  </PublicLayout>
+                }
+              />
+
               {/* User Dashboard Route */}
-              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <UserProtectedRoute>
+                    <UserDashboard />
+                  </UserProtectedRoute>
+                }
+              />
 
               {/* TV Shows Routes */}
-              <Route path="/dashboard/tv-shows" element={<TVShows />} />
-              <Route path="/dashboard/tv-show/:id" element={<TVShowDetail />} />
+              <Route
+                path="/dashboard/tv-shows"
+                element={
+                  <UserProtectedRoute>
+                    <TVShows />
+                  </UserProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/tv-show/:id"
+                element={
+                  <UserProtectedRoute>
+                    <TVShowDetail />
+                  </UserProtectedRoute>
+                }
+              />
 
               {/* Movies Routes */}
-              <Route path="/dashboard/movies" element={<Movies />} />
-              <Route path="/dashboard/movie/:id" element={<MovieDetail />} />
-
-              {/* Subscriptions Route */}
               <Route
-                path="/dashboard/subscriptions"
-                element={<Subscriptions />}
+                path="/dashboard/movies"
+                element={
+                  <UserProtectedRoute>
+                    <Movies />
+                  </UserProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/movie/:id"
+                element={
+                  <UserProtectedRoute>
+                    <MovieDetail />
+                  </UserProtectedRoute>
+                }
               />
 
               {/* Watch Route */}
-              <Route path="/dashboard/watch" element={<Watch />} />
+              <Route
+                path="/dashboard/watch"
+                element={
+                  <UserProtectedRoute>
+                    <Watch />
+                  </UserProtectedRoute>
+                }
+              />
 
               {/* Protected Admin Routes */}
               <Route
@@ -392,7 +439,7 @@ const App = () => {
             </Routes>
             <Toaster />
             {/* Temporary Backend Tester Component */}
-            {process.env.NODE_ENV === 'development' && <BackendTester />}
+            {/* {process.env.NODE_ENV === "development" && <BackendTester />} */}
           </Router>
         </AuthProvider>
       </ThemeProvider>

@@ -114,7 +114,8 @@ export const AuthProvider = ({ children }) => {
 
       const response = await apiService.login({ email, password });
 
-      if (response.token && response.user) {
+      // Handle backend response format: { success, message, user, token }
+      if (response.success && response.token && response.user) {
         // Store the token in localStorage
         localStorage.setItem("authToken", response.token);
 
@@ -130,7 +131,7 @@ export const AuthProvider = ({ children }) => {
 
         return { user: response.user, profile: response.user };
       } else {
-        throw new Error("Invalid response from server");
+        throw new Error(response.message || "Invalid response from server");
       }
     } catch (error) {
       console.error("Sign in error:", error);
@@ -248,13 +249,14 @@ export const AuthProvider = ({ children }) => {
         ...userData,
       });
 
-      if (response.token && response.user) {
+      // Handle backend response format: { success, message, user, token }
+      if (response.success && response.token && response.user) {
         localStorage.setItem("authToken", response.token);
         setUser(response.user);
         setUserProfile(response.user);
         return { user: response.user, profile: response.user };
       } else {
-        throw new Error("Invalid response from server");
+        throw new Error(response.message || "Invalid response from server");
       }
     } catch (error) {
       console.error("Create admin error:", error);
@@ -275,13 +277,14 @@ export const AuthProvider = ({ children }) => {
         ...userData,
       });
 
-      if (response.token && response.user) {
+      // Handle backend response format: { success, message, user, token }
+      if (response.success && response.token && response.user) {
         localStorage.setItem("authToken", response.token);
         setUser(response.user);
         setUserProfile(response.user);
         return { user: response.user, profile: response.user };
       } else {
-        throw new Error("Invalid response from server");
+        throw new Error(response.message || "Invalid response from server");
       }
     } catch (error) {
       console.error("Create user error:", error);

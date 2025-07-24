@@ -158,12 +158,12 @@ const Home = () => {
               >
                 Support
               </a>
-              <a
-                href="#"
+              <Link
+                to="/subscriptions"
                 className="text-white hover:text-gray-300 transition-colors font-medium text-sm 2xl:text-base"
               >
                 Subscriptions
-              </a>
+              </Link>
             </div>
 
             {/* Search and User Actions */}
@@ -172,17 +172,19 @@ const Home = () => {
                 <Search className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
               </button>
               <button className="text-white hover:text-gray-300 transition-colors p-1.5 sm:p-2 touch-manipulation rounded-full hover:bg-white/10">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Link to="/login">
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </Link>
               </button>
 
               {/* Mobile menu button */}
@@ -259,13 +261,13 @@ const Home = () => {
                 >
                   Support
                 </a>
-                <a
-                  href="#"
+                <Link
+                  to="/subscriptions"
                   className="text-white hover:text-purple-400 transition-colors font-medium text-lg py-3 px-4 rounded-lg hover:bg-white/5"
                   onClick={closeMobileMenu}
                 >
                   Subscriptions
-                </a>
+                </Link>
               </div>
 
               {/* Additional Options */}
@@ -326,10 +328,11 @@ const Home = () => {
               also create your own watchlist, so you can easily find the content
               you want to watch.
             </p>
-            <button
-              className="bg-[#af3494] font-semibold rounded-lg transition-all duration-500 
-              transform hover:scale-105 hover:bg-[#9c2d84] active:scale-95
-              flex items-center space-x-2 sm:space-x-3 mx-auto touch-manipulation
+            <Link to="/dashboard">
+              <button
+                className="bg-[#af3494] font-semibold rounded-lg transition-all duration-500 
+              hover:bg-[#9c2d84] active:scale-95
+              flex items-center space-x-2 sm:space-x-3 mx-auto 
               py-2.5 px-5 text-xs
               xs:py-3 xs:px-6 xs:text-sm
               sm:py-3.5 sm:px-7 sm:text-sm
@@ -338,12 +341,11 @@ const Home = () => {
               xl:py-5 xl:px-10 xl:text-lg
               shadow-lg hover:shadow-xl active:shadow-md
               min-h-[44px] min-w-[120px]"
-            >
-              <Play className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
-              <span onClick={() => navigate("/dashboard")}>
-                Start Watching Now
-              </span>
-            </button>
+              >
+                <Play className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5" />
+                <span>Start Watching Now</span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

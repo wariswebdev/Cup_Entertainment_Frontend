@@ -47,7 +47,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
     {
       name: "Subscriptions",
       icon: CreditCard,
-      path: "/dashboard/subscriptions",
+      path: "/subscriptions",
       active: location.pathname.includes("/subscriptions"),
     },
   ];

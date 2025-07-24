@@ -76,13 +76,11 @@ const Subscriptions = () => {
 
   return (
     <div className="bg-[#101010]">
-      {/* Sidebar */}
-      <DashboardSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content */}
       <motion.div
         className={`transition-all duration-300 pt-10 ${
-          sidebarOpen ? "" : "ml-16"
+          sidebarOpen ? "" : ""
         } `}
         variants={containerVariants}
         initial="hidden"
