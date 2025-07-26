@@ -47,6 +47,20 @@ class ApiService {
   }
 
   // Auth endpoints
+  async sendOTP(email, type = "signup") {
+    return this.request("/auth/send-otp", {
+      method: "POST",
+      body: JSON.stringify({ email, type }),
+    });
+  }
+
+  async verifyOTP(email, otp, type = "signup") {
+    return this.request("/auth/verify-otp", {
+      method: "POST",
+      body: JSON.stringify({ email, otp, type }),
+    });
+  }
+
   async signup(userData) {
     return this.request("/auth/signup", {
       method: "POST",
@@ -101,7 +115,14 @@ class ApiService {
 
   // Movies endpoints
   async getAllMovies() {
-    return this.request("/movies");
+    const response = await this.request("/movies");
+    // Extract movies array from the response based on API structure
+    // Expected response: { success: true, message: "...", movies: [...], count: N }
+    if (response && response.movies) {
+      return response.movies;
+    }
+    // Fallback: if response is already an array, return it directly
+    return Array.isArray(response) ? response : [];
   }
 
   async getMovieById(movieId) {
@@ -130,7 +151,14 @@ class ApiService {
 
   // TV Shows endpoints
   async getAllTVShows() {
-    return this.request("/tv-shows");
+    const response = await this.request("/tv-shows");
+    // Extract tvShows array from the response based on API structure
+    // Expected response: { success: true, message: "...", tvShows: [...], count: N }
+    if (response && response.tvShows) {
+      return response.tvShows;
+    }
+    // Fallback: if response is already an array, return it directly
+    return Array.isArray(response) ? response : [];
   }
 
   async getTVShowById(tvShowId) {

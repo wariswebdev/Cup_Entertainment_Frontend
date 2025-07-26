@@ -30,7 +30,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen }) => {
       name: "TV Shows",
       icon: Tv,
       path: "/dashboard/tv-shows",
-      active: location.pathname.includes("/tv-show"),
+      active: location.pathname.includes("/tv-shows"),
     },
     {
       name: "Movies",

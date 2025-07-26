@@ -265,14 +265,79 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Create regular user
-  const createUser = async (email, password, userData) => {
+  // Send OTP for signup
+  const sendOTP = async (email, type = "signup") => {
+    try {
+      setError(null);
+      setLoading(true);
+
+      const response = await apiService.sendOTP(email, type);
+
+      if (response.success) {
+        return response;
+      } else {
+        throw new Error(response.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      let errorMessage = "Failed to send OTP. Please try again.";
+
+      if (error.message.includes("User already exists")) {
+        errorMessage = "An account with this email already exists.";
+      } else if (error.message.includes("Invalid email")) {
+        errorMessage = "Please enter a valid email address.";
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Verify OTP
+  const verifyOTP = async (email, otp, type = "signup") => {
+    try {
+      setError(null);
+      setLoading(true);
+
+      const response = await apiService.verifyOTP(email, otp, type);
+
+      if (response.success) {
+        return response;
+      } else {
+        throw new Error(response.message || "Invalid OTP");
+      }
+    } catch (error) {
+      console.error("Verify OTP error:", error);
+      let errorMessage = "Invalid or expired OTP. Please try again.";
+
+      if (error.message.includes("OTP expired")) {
+        errorMessage = "OTP has expired. Please request a new one.";
+      } else if (error.message.includes("Invalid OTP")) {
+        errorMessage = "Invalid OTP. Please check and try again.";
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create regular user (updated to include OTP)
+  const createUser = async (email, password, userData, otp) => {
     try {
       setError(null);
       const response = await apiService.signup({
         fullName: userData.name || userData.fullName,
         email,
         password,
+        otp,
         role: "user",
         ...userData,
       });
@@ -341,6 +406,8 @@ export const AuthProvider = ({ children }) => {
     changePassword,
     createAdminUser,
     createUser,
+    sendOTP,
+    verifyOTP,
     isAdmin,
     isAuthenticated,
     lastActivity,
